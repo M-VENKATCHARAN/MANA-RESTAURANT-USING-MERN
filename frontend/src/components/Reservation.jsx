@@ -11,14 +11,25 @@ const Reservation = () => {
   const [email, setEmail] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
-  const [phone, setPhone] = useState(0);
+  const [phone, setPhone] = useState(""); // Changed from 0 to ""
   const navigate = useNavigate();
 
   const handleReservation = async (e) => {
     e.preventDefault();
+    
+    // Add validation before sending
+    if (!firstName || !lastName || !email || !date || !time || !phone) {
+      return toast.error("Please fill all fields");
+    }
+
+    // Validate phone number length
+    if (phone.length !== 11) {
+      return toast.error("Phone number must be 11 digits");
+    }
+
     try {
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/reservation/send",  // Updated API endpoint
+        "http://localhost:4000/api/v1/reservation/send",
         { firstName, lastName, email, phone, date, time },
         {
           headers: {
@@ -30,7 +41,7 @@ const Reservation = () => {
       toast.success(data.message);
       setFirstName("");
       setLastName("");
-      setPhone(0);
+      setPhone("");  // Changed from 0 to ""
       setEmail("");
       setTime("");
       setDate("");
@@ -88,10 +99,11 @@ const Reservation = () => {
                   onChange={(e) => setEmail(e.target.value)}
                 />
                 <input
-                  type="number"
-                  placeholder="Phone"
+                  type="tel" // Changed from number to tel
+                  placeholder="Phone (11 digits)"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
+                  maxLength="11"
                 />
               </div>
               <button type="submit" onClick={handleReservation}>
@@ -109,4 +121,5 @@ const Reservation = () => {
 };
 
 export default Reservation;
+
 
